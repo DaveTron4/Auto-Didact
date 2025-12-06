@@ -1,0 +1,38 @@
+# FastAPI and server
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# AI & LLM
+langchain>=0.1.0
+langchain-groq>=0.0.1
+langchain-community>=0.0.10
+
+# Vector store & database
+supabase>=2.0.0
+pgvector>=0.2.0
+
+# Document processing
+pypdf>=3.17.0
+
+# Embeddings
+sentence-transformers>=2.2.0
+
+# Media generation - TTS
+edge-tts>=6.1.0
+
+# Media generation - Image (Stable Diffusion)
+diffusers>=0.25.0
+transformers>=4.35.0
+accelerate>=0.25.0
+torch>=2.1.0
+safetensors>=0.4.0
+
+# Video editing
+moviepy>=1.0.3
+
+# HTTP client (for any external APIs)
+aiohttp>=3.9.0
+
+# Utilities
+python-dotenv>=1.0.0

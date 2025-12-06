@@ -10,6 +10,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 # Import our custom services
 from app.services.vector_store import upload_document_to_db, search_documents
 from app.services.llm_engine import generate_answer
+from app.routers.video import router as video_router
 
 app = FastAPI()
 
@@ -78,3 +79,7 @@ async def ask_question(request: ChatRequest):
     answer = generate_answer(request.question, context_text)
 
     return {"answer": answer, "sources": [doc.page_content[:100] + "..." for doc in relevant_docs]}
+
+
+# Video generation router (media engine)
+app.include_router(video_router)
