@@ -1,5 +1,6 @@
 import os
-from fastapi import FastAPI, HTTPException
+import shutil
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -33,30 +34,47 @@ def health_check():
     return {"status": "Backend is running!", "project": "Auto-Didact"}
 
 @app.post("/test-ingest")
-async def ingest_pdf():
+async def ingest_pdf(file: UploadFile = File(...)):
     """
-    1. Loads 'sample.pdf' (Make sure this file exists in backend/ folder!)
+    1. Accepts PDF file upload
     2. Splits it into chunks
     3. Uploads to Supabase
     """
-    file_path = "sample.pdf"
+    if not file.filename.endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported")
+
+    # Save uploaded file temporarily
+    os.makedirs("backend/tmp", exist_ok=True)
+    file_path = os.path.join("backend", "tmp", file.filename)
     
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="sample.pdf not found in backend folder")
+    try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
 
-    # 1. Load PDF
-    loader = PyPDFLoader(file_path)
-    docs = loader.load()
+    try:
+        # 1. Load PDF
+        loader = PyPDFLoader(file_path)
+        docs = loader.load()
 
-    # 2. Split Text (Crucial Step!)
-    # LLMs can't read a whole book at once. We verify 'chunk_size' is small enough for the embedding model.
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-    split_docs = splitter.split_documents(docs)
+        # 2. Split Text (Crucial Step!)
+        # LLMs can't read a whole book at once. We verify 'chunk_size' is small enough for the embedding model.
+        splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+        split_docs = splitter.split_documents(docs)
 
-    # 3. Upload to Supabase
-    upload_document_to_db(split_docs)
+        # 3. Upload to Supabase
+        upload_document_to_db(split_docs)
 
-    return {"status": "Success", "chunks_uploaded": len(split_docs)}
+        return {"status": "Success", "chunks_uploaded": len(split_docs), "filename": file.filename}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PDF processing failed: {str(e)}")
+    
+    finally:
+        # Cleanup temp file
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
 
 @app.post("/test-ask")

@@ -3,7 +3,17 @@ import asyncio
 import uuid
 from typing import Dict, List, Optional
 
-from moviepy.editor import ImageClip, AudioFileClip, concatenate_videoclips
+try:
+    from moviepy.editor import ImageClip, AudioFileClip, concatenate_videoclips
+except ImportError:
+    # MoviePy 2.x uses different import structure
+    try:
+        from moviepy import ImageClip, AudioFileClip, concatenate_videoclips
+    except ImportError:
+        raise ImportError(
+            "moviepy is required but not properly installed. "
+            "Try: pip uninstall moviepy && pip install moviepy==1.0.3"
+        )
 
 # Lazy-load diffusers pipeline (initialized once on first use)
 _sd_pipeline = None

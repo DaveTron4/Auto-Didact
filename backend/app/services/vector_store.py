@@ -21,6 +21,14 @@ def upload_document_to_db(docs):
     """
     print(f"--- Uploading {len(docs)} chunks to Supabase ---")
     
+    # Add sequential IDs to avoid UUID/bigint conflicts
+    for idx, doc in enumerate(docs):
+        if not hasattr(doc, 'metadata') or doc.metadata is None:
+            doc.metadata = {}
+        # Use timestamp + index for unique ID
+        import time
+        doc.metadata['id'] = int(time.time() * 1000) + idx
+    
     vector_store = SupabaseVectorStore.from_documents(
         docs,
         embeddings,
