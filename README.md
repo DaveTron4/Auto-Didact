@@ -121,26 +121,4 @@ Open `http://localhost:3000` in your browser and upload a PDF to try the pipelin
 - [ ] Frontend video player
 - [ ] Export to YouTube/TikTok
 
-## 🤝 Contributing
-
-Contributions welcome! Please open an issue or submit a PR. When contributing, keep these in mind:
-
-- Keep sensitive keys out of commits.
-- Update docs for any infra or API changes.
-- Share small, focused PRs.
-
-## 📬 Contact
-
-- Your Name — LinkedIn | Twitter
-
-Project Link: https://github.com/yourusername/auto-didact
-
----
-
-Happy building! If you'd like, I can also:
-
-- Commit this `README.md` for you (create a branch and push).
-- Add a minimal `requirements.txt` or `pyproject.toml` if missing.
-- Create a CI job to run lint/tests.
-
 Tell me which next step you want me to take.
